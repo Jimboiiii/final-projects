@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Registration System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #FFDAB9; /* Peach background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(135deg, #FFDAB9 0%, #FFC0CB 100%);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 160, 122, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 36px rgba(255, 160, 122, 0.4);
+        }
+        
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #777;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #FF7F50;
+            border-bottom: 2px solid #FF7F50;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border 0.3s ease;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        input:focus {
+            border-color: #FF7F50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(255, 127, 80, 0.3);
+            background-color: rgba(255, 255, 255, 1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #FF7F50; /* Coral color */
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);
+        }
+        
+        button:hover {
+            background-color: #FF6347; /* Tomato color */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 127, 80, 0.4);
+        }
+        
+        .error-msg {
+            color: #d93025;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-msg {
+            color: #0f9d58;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            text-align: center;
+        }
+        
+        .welcome-container {
+            display: none;
+            text-align: center;
+        }
+        
+        .welcome-container h2 {
+            margin-bottom: 20px;
+            color: #FF7F50;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .welcome-container p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        
+        .logout-btn {
+            background-color: #FF6347;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-btn:hover {
+            background-color: #FF4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Decorative elements -->
+        <div style="position: absolute; width: 50px; height: 50px; background: rgba(255, 127, 80, 0.3); border-radius: 50%; top: -25px; left: -25px; z-index: -1;"></div>
+        <div style="position: absolute; width: 30px; height: 30px; background: rgba(255, 160, 122, 0.3); border-radius: 50%; bottom: -15px; right: -15px; z-index: -1;"></div>
+        <div class="auth-container">
+            <h1 style="color: #FF7F50; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Account Access</h1>
+            
+            <div class="tabs">
+                <button class="tab-btn active" id="login-tab">Login</button>
+                <button class="tab-btn" id="register-tab">Register</button>
+            </div>
+            
+            <div class="form-container" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email">
+                    <div class="error-msg" id="login-email-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password">
+                    <div class="error-msg" id="login-password-error"></div>
+                </div>
+                
+                <button id="login-btn">Login</button>
+                <div class="error-msg" id="login-error"></div>
+                <div class="success-msg" id="login-success">Login successful! Redirecting...</div>
+            </div>
+            
+            <div class="form-container" id="register-form" style="display: none;">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" placeholder="Enter your full name">
+                    <div class="error-msg" id="register-name-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" placeholder="Enter your email">
+                    <div class="error-msg" id="register-email-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" placeholder="Enter your password">
+                    <div class="error-msg" id="register-password-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input type="password" id="register-confirm-password" placeholder="Confirm your password">
+                    <div class="error-msg" id="register-confirm-password-error"></div>
+                </div>
+                
+                <button id="register-btn">Register</button>
+                <div class="error-msg" id="register-error"></div>
+                <div class="success-msg" id="register-success">Registration successful! You can now login.</div>
+            </div>
+        </div>
+        
+        <div class="welcome-container" id="welcome-container">
+            <h2>Welcome, <span id="user-name">User</span>!</h2>
+            <p>You are successfully logged in. Welcome to your dashboard!</p>
+            <div style="margin: 20px 0; padding: 15px; background-color: rgba(255, 127, 80, 0.1); border-radius: 10px; text-align: left;">
+                <h3 style="color: #FF7F50; margin-bottom: 10px; font-size: 16px;">Account Information</h3>
+                <p style="margin: 5px 0; font-size: 14px;"><strong>Email:</strong> <span id="user-email">user@example.com</span></p>
+                <p style="margin: 5px 0; font-size: 14px;"><strong>Last Login:</strong> <span id="login-time">Just now</span></p>
+            </div>
+            <button class="logout-btn" id="logout-btn">Logout</button>
+        </div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authContainer = document.querySelector('.auth-container');
+        const welcomeContainer = document.getElementById('welcome-container');
+        const userNameElement = document.getElementById('user-name');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Form Inputs & Error Elements
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginEmailError = document.getElementById('login-email-error');
+        const loginPasswordError = document.getElementById('login-password-error');
+        const loginError = document.getElementById('login-error');
+        const loginSuccess = document.getElementById('login-success');
+        
+        const registerName = document.getElementById('register-name');
+        const registerEmail = document.getElementById('register-email');
+        const registerPassword = document.getElementById('register-password');
+        const registerConfirmPassword = document.getElementById('register-confirm-password');
+        const registerNameError = document.getElementById('register-name-error');
+        const registerEmailError = document.getElementById('register-email-error');
+        const registerPasswordError = document.getElementById('register-password-error');
+        const registerConfirmPasswordError = document.getElementById('register-confirm-password-error');
+        const registerError = document.getElementById('register-error');
+        const registerSuccess = document.getElementById('register-success');
+        
+        // Tab Switching
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.style.display = 'flex';
+            registerForm.style.display = 'none';
+            clearErrors();
+        });
+        
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.style.display = 'flex';
+            loginForm.style.display = 'none';
+            clearErrors();
+        });
+        
+        // Helper Functions
+        function clearErrors() {
+            // Clear all error messages
+            const errorElements = document.querySelectorAll('.error-msg');
+            errorElements.forEach(element => {
+                element.style.display = 'none';
+                element.textContent = '';
+            });
+            
+            // Clear success messages
+            const successElements = document.querySelectorAll('.success-msg');
+            successElements.forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+        
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function showError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+        
+        function getUserFromStorage(email) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            return users.find(user => user.email === email);
+        }
+        
+        function checkLoggedInStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                userNameElement.textContent = currentUser.name;
+                document.getElementById('user-email').textContent = currentUser.email;
+                document.getElementById('login-time').textContent = new Date().toLocaleString();
+                authContainer.style.display = 'none';
+                welcomeContainer.style.display = 'block';
+            } else {
+                authContainer.style.display = 'block';
+                welcomeContainer.style.display = 'none';
+            }
+        }
+        
+        // Check if user is already logged in
+        checkLoggedInStatus();
+        
+        // Login Form Submission
+        document.getElementById('login-btn').addEventListener('click', () => {
+            clearErrors();
+            let isValid = true;
+            
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value;
+            
+            if (!email) {
+                showError(loginEmailError, 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError(loginEmailError, 'Please enter a valid email');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showError(loginPasswordError, 'Password is required');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                const user = getUserFromStorage(email);
+                
+                if (!user) {
+                    showError(loginError, 'User not found. Please register first.');
+                } else if (user.password !== password) {
+                    showError(loginError, 'Incorrect password');
+                } else {
+                    // Login success
+                    loginSuccess.style.display = 'block';
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    // Show welcome screen after a short delay
+                    setTimeout(() => {
+                        checkLoggedInStatus();
+                    }, 1500);
+                }
+            }
+        });
+        
+        // Registration Form Submission
+        document.getElementById('register-btn').addEventListener('click', () => {
+            clearErrors();
+            let isValid = true;
+            
+            const name = registerName.value.trim();
+            const email = registerEmail.value.trim();
+            const password = registerPassword.value;
+            const confirmPassword = registerConfirmPassword.value;
+            
+            if (!name) {
+                showError(registerNameError, 'Name is required');
+                isValid = false;
+            }
+            
+            if (!email) {
+                showError(registerEmailError, 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError(registerEmailError, 'Please enter a valid email');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showError(registerPasswordError, 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError(registerPasswordError, 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!confirmPassword) {
+                showError(registerConfirmPasswordError, 'Please confirm your password');
+                isValid = false;
+            } else if (confirmPassword !== password) {
+                showError(registerConfirmPasswordError, 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                const existingUser = getUserFromStorage(email);
+                
+                if (existingUser) {
+                    showError(registerError, 'Email already in use. Try a different one.');
+                } else {
+                    // Register the user
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const newUser = { name, email, password };
+                    users.push(newUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Clear the form
+                    registerName.value = '';
+                    registerEmail.value = '';
+                    registerPassword.value = '';
+                    registerConfirmPassword.value = '';
+                    
+                    // Show success message
+                    registerSuccess.style.display = 'block';
+                    
+                    // Switch to login tab after a short delay
+                    setTimeout(() => {
+                        loginTab.click();
+                    }, 2000);
+                }
+            }
+        });
+        
+        // Logout Functionality
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            checkLoggedInStatus();
+            
+            // Clear login form
+            loginEmail.value = '';
+            loginPassword.value = '';
+        });
+    </script>
+</body>
+</html>
